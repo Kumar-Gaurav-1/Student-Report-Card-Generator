@@ -1,0 +1,105 @@
+
+import csv
+import os
+
+CSV_FILENAME = 'report_cards.csv'
+FIELDNAMES = ['student_id', 'name', 'subjects', 'total', 'percentage', 'grade']
+
+def calculate_grade(p):
+    if p >= 90:
+        return 'A1'
+    if p >= 80:
+        return 'A2'
+    if p >= 70:
+        return 'B1'
+    if p >= 60:
+        return 'B2'
+    if p >= 50:
+        return 'C1'
+    if p >= 45:
+        return 'C2'
+    if p >= 40:
+        return 'D'
+    return 'E'
+
+def init_csv():
+    if not os.path.exists(CSV_FILENAME):
+        with open(CSV_FILENAME, 'w', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
+            writer.writeheader()
+
+def add_student():
+    sid = input("Student ID: ").strip()
+    name = input("Name: ").strip()
+    try:
+        n = int(input("How many subjects? ").strip())
+    except:
+        print("Oops, that's not a number.")
+        return
+
+    total = 0
+    subjects = []
+    for i in range(n):
+        sub = input(f"  Subject {i+1} name : ").strip()
+        try:
+            mark = float(input(f"  Marks in {sub}    : ").strip())
+        except:
+            mark = 0.0
+        subjects.append(f"{sub}:{mark}")
+        total += mark
+
+    pct = total / n if n else 0
+    grade = calculate_grade(pct)
+
+    with open(CSV_FILENAME, 'a', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
+        writer.writerow({
+            'student_id': sid,
+            'name': name,
+            'subjects': ';'.join(subjects),
+            'total': round(total,2),
+            'percentage': round(pct,2),
+            'grade': grade
+        })
+    print(f"\nSaved report for {name}!\n")
+
+def view_student():
+    sid = input("Enter Student ID to view: ").strip()
+    found = False
+    with open(CSV_FILENAME, 'r', newline='') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row['student_id'] == sid:
+                found = True
+                print(f"\nReport for {row['name']} (ID: {sid})")
+                print("-" * 30)
+                parts = row['subjects'].split(';')
+                for p in parts:
+                    sub, mark = p.split(':')
+                    print(f"{sub:15}: {mark}")
+                print(f"{'Total':15}: {row['total']}")
+                print(f"{'Percent':15}: {row['percentage']}%")
+                print(f"{'Grade':15}: {row['grade']}\n")
+                break
+    if not found:
+        print("No record found.\n")
+
+def main():
+    init_csv()
+    while True:
+        print("1) Add report")
+        print("2) View report")
+        print("3) Quit")
+        choice = input("> ").strip()
+        if choice == '1':
+            add_student()
+        elif choice == '2':
+            view_student()
+        elif choice == '3':
+            print("Bye!")
+            break
+        else:
+            print("Try 1, 2 or 3.\n")
+
+if __name__ == "__main__":
+    main()
