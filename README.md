@@ -24,5 +24,5 @@ Aligns with Class 12 CBSE syllabus topics: file handling, control statements, 
 
 1. **Clone the repo**  
    ```bash
-   git clone https://github.com/<your-username>/report-card-generator.git
+   git clone https://github.com/Kumar-Gaurav-1/report-card-generator.git
    cd report-card-generator
